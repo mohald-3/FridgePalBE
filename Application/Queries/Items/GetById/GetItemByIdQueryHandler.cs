@@ -1,19 +1,23 @@
 ﻿using Application.Dtos.Items;
+using Application.Dtos.MediatR;
 using Application.Interfaces.Repositories.Items;
 using MediatR;
 
 namespace Application.Queries.Items.GetById
 {
-    public class GetItemByIdQueryHandler : IRequestHandler<GetItemByIdQuery, ItemResponseDto>
+    public class GetItemByIdQueryHandler : IRequestHandler<GetItemByIdQuery, OperationResult<ItemResponseDto>>
     {
         private readonly IItemRepository _repo;
         public GetItemByIdQueryHandler(IItemRepository repo) => _repo = repo;
 
-        public async Task<ItemResponseDto> Handle(GetItemByIdQuery request, CancellationToken cancellationToken)
+        public async Task<OperationResult<ItemResponseDto>> Handle(GetItemByIdQuery request, CancellationToken cancellationToken)
         {
-            var item = await _repo.GetByIdAsync(request.Id) ?? throw new Exception("Item not found");
+            var item = await _repo.GetByIdAsync(request.Id);
 
-            return new ItemResponseDto
+            if (item == null)
+                return OperationResult<ItemResponseDto>.Fail("Item not found");
+
+            var result = new ItemResponseDto
             {
                 ItemId = item.ItemId,
                 ProductName = item.ProductName,
@@ -24,6 +28,8 @@ namespace Application.Queries.Items.GetById
                 CategoryId = item.CategoryId,
                 CategoryName = item.Category?.CategoryName
             };
+
+            return OperationResult<ItemResponseDto>.Ok(result);
         }
     }
 }

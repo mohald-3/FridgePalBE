@@ -1,7 +1,7 @@
-﻿using Application.Commands.Items;
-//using Application.Commands.Items.AddItem;
+﻿using Application.Commands.Items.AddItem;
+using Application.Commands.Items.DeleteItem;
+using Application.Commands.Items.UpdateItem;
 using Application.Dtos.Items;
-using Application.Exceptions.EntityNotFound;
 using Application.Queries.Items.GetAll;
 using Application.Queries.Items.GetById;
 using Application.Validators.Item;
@@ -28,7 +28,12 @@ namespace API.Controllers.ItemsController
         [Route("getAllItems")]
         public async Task<IActionResult> GetAllItems()
         {
-            return Ok(await _mediator.Send(new GetAllItemsQuery()));
+            var result = await _mediator.Send(new GetAllItemsQuery());
+
+            if (!result.IsSuccess)
+                return BadRequest(result.ErrorMessage);
+
+            return Ok(result.Result);
         }
 
         // GET: api/items/getItemById/{id}
@@ -36,20 +41,18 @@ namespace API.Controllers.ItemsController
         [Route("getItemById/{id}")]
         public async Task<IActionResult> GetItemById(Guid id)
         {
-            try
-            {
-                return Ok(await _mediator.Send(new GetItemByIdQuery(id)));
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            var result = await _mediator.Send(new GetItemByIdQuery(id));
+
+            if (!result.IsSuccess)
+                return NotFound(result.ErrorMessage);
+
+            return Ok(result.Result);
         }
 
         // POST: api/items/addNewItem
         [HttpPost]
         [Route("addNewItem")]
-        [ProducesResponseType(typeof(ItemDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ItemResponseDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddItem([FromBody] ItemDto newItem)
         {
             var validatedItem = _itemValidator.Validate(newItem);
@@ -59,17 +62,42 @@ namespace API.Controllers.ItemsController
                 return BadRequest(validatedItem.Errors.ConvertAll(error => error.ErrorMessage));
             }
 
-            try
+            var result = await _mediator.Send(new AddItemCommand(newItem));
+
+            if (!result.IsSuccess)
             {
-                return Ok(await _mediator.Send(new AddItemCommand(newItem)));
+                return BadRequest(result.ErrorMessage);
             }
-            catch (EntityNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+
+            return Ok(result.Result);
         }
 
-        // PUT/DELETE can be added here as needed.
+        [HttpPut]
+        [Route("updateItem/{itemId}")]
+        public async Task<IActionResult> UpdateItem(Guid itemId, [FromBody] ItemDto updatedItem)
+        {
+            var validationResult = _itemValidator.Validate(updatedItem);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            }
+
+            var result = await _mediator.Send(new UpdateItemCommand(itemId, updatedItem));
+            return Ok(result);
+        }
+
+        [HttpDelete]
+        [Route("deleteItem/{itemId}")]
+        public async Task<IActionResult> DeleteItem(Guid itemId)
+        {
+            var result = await _mediator.Send(new DeleteItemCommand(itemId));
+
+            if (!result.IsSuccess)
+                return NotFound(result.ErrorMessage);
+
+            return Ok(result.Result);
+        }
 
     }
 }

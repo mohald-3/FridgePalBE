@@ -1,18 +1,20 @@
 ﻿using Application.Dtos.Items;
+using Application.Dtos.MediatR;
 using Application.Interfaces.Repositories.Items;
 using MediatR;
 
 namespace Application.Queries.Items.GetAll
 {
-    public class GetAllItemsQueryHandler : IRequestHandler<GetAllItemsQuery, List<ItemResponseDto>>
+    public class GetAllItemsQueryHandler : IRequestHandler<GetAllItemsQuery, OperationResult<List<ItemResponseDto>>>
     {
         private readonly IItemRepository _repo;
         public GetAllItemsQueryHandler(IItemRepository repo) => _repo = repo;
 
-        public async Task<List<ItemResponseDto>> Handle(GetAllItemsQuery request, CancellationToken cancellationToken)
+        public async Task<OperationResult<List<ItemResponseDto>>> Handle(GetAllItemsQuery request, CancellationToken cancellationToken)
         {
             var items = await _repo.GetAllAsync();
-            return items.Select(i => new ItemResponseDto
+
+            var result = items.Select(i => new ItemResponseDto
             {
                 ItemId = i.ItemId,
                 ProductName = i.ProductName,
@@ -23,6 +25,8 @@ namespace Application.Queries.Items.GetAll
                 CategoryId = i.CategoryId,
                 CategoryName = i.Category?.CategoryName
             }).ToList();
+
+            return OperationResult<List<ItemResponseDto>>.Ok(result);
         }
     }
 }

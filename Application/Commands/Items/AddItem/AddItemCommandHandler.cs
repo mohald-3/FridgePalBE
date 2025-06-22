@@ -1,16 +1,17 @@
 ﻿using Application.Dtos.Items;
+using Application.Dtos.MediatR;
 using Application.Interfaces.Repositories.Items;
 using Domain.Models.Item;
 using MediatR;
 
-namespace Application.Commands.Items
+namespace Application.Commands.Items.AddItem
 {
-    public class AddItemCommandHandler : IRequestHandler<AddItemCommand, ItemResponseDto>
+    public class AddItemCommandHandler : IRequestHandler<AddItemCommand, OperationResult<ItemResponseDto>>
     {
         private readonly IItemRepository _repo;
         public AddItemCommandHandler(IItemRepository repo) => _repo = repo;
 
-        public async Task<ItemResponseDto> Handle(AddItemCommand request, CancellationToken cancellationToken)
+        public async Task<OperationResult<ItemResponseDto>> Handle(AddItemCommand request, CancellationToken cancellationToken)
         {
             var model = new ItemModel
             {
@@ -25,7 +26,7 @@ namespace Application.Commands.Items
 
             var saved = await _repo.AddAsync(model);
 
-            return new ItemResponseDto
+            var result = new ItemResponseDto
             {
                 ItemId = saved.ItemId,
                 ProductName = saved.ProductName,
@@ -35,6 +36,8 @@ namespace Application.Commands.Items
                 Notified = saved.Notified,
                 CategoryId = saved.CategoryId
             };
+
+            return OperationResult<ItemResponseDto>.Ok(result);
         }
     }
 }
