@@ -1,8 +1,11 @@
-﻿using Infrastructure.Database;
+﻿using Application.Interfaces.Repositories.Authentication;
+using Application.Interfaces.Repositories.Items;
+using Application.Interfaces.Repositories.Users;
+using Infrastructure.Database;
 using Infrastructure.Database.DatabaseHelpers;
 using Infrastructure.Database.MySQLDatabase;
 using Infrastructure.Repositories.Authorization;
-using Infrastructure.Repositories.Dogs;
+using Infrastructure.Repositories.Items;
 using Infrastructure.Repositories.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,10 +17,9 @@ namespace Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connectionString)
         {
             services.AddSingleton<MockDatabase>();
-            services.AddScoped<AuthRepository>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IDogRepository, DogRepository>();
-
+            services.AddScoped<IItemRepository, ItemRepository>();
 
             services.AddDbContext<RealDatabase>(options =>
             {

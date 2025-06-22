@@ -1,5 +1,6 @@
 ﻿using Domain.Models.User;
 using Infrastructure.Database.MySQLDatabase;
+using Application.Interfaces.Repositories.Users;
 
 namespace Infrastructure.Repositories.Users
 {

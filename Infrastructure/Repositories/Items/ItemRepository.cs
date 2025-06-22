@@ -1,0 +1,30 @@
+﻿using Application.Interfaces.Repositories.Items;
+using Domain.Models.Item;
+using Infrastructure.Database.MySQLDatabase;
+using Microsoft.EntityFrameworkCore;
+
+namespace Infrastructure.Repositories.Items
+{
+    public class ItemRepository : IItemRepository
+    {
+        private readonly RealDatabase _context;
+        public ItemRepository(RealDatabase context) => _context = context;
+
+        public async Task<List<ItemModel>> GetAllAsync()
+        {
+            return await _context.Items.Include(i => i.Category).ToListAsync();
+        }
+
+        public async Task<ItemModel?> GetByIdAsync(Guid id)
+        {
+            return await _context.Items.Include(i => i.Category).FirstOrDefaultAsync(i => i.ItemId == id);
+        }
+
+        public async Task<ItemModel> AddAsync(ItemModel item)
+        {
+            _context.Items.Add(item);
+            await _context.SaveChangesAsync();
+            return item;
+        }
+    }
+}

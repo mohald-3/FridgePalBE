@@ -1,4 +1,5 @@
-﻿using Domain.Models.User;
+﻿using Application.Interfaces.Repositories.Authentication;
+using Domain.Models.User;
 using Infrastructure.Database;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -8,7 +9,7 @@ using System.Text;
 
 namespace Infrastructure.Repositories.Authorization
 {
-    public class AuthRepository
+    public class AuthRepository : IAuthRepository
     {
         private readonly IConfiguration _configuration;
         private readonly MockDatabase _mockDatabase;

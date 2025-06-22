@@ -1,14 +1,14 @@
 ﻿using Application.Dtos.Users;
-using Infrastructure.Repositories.Authorization;
+using Application.Interfaces.Repositories.Authentication;
 using MediatR;
 
 namespace Application.Queries.Users.Login
 {
     public class LoginUserQueryHandler : IRequestHandler<LoginUserQuery, string>
     {
-        private readonly AuthRepository _authRepository;
+        private readonly IAuthRepository _authRepository;
 
-        public LoginUserQueryHandler(AuthRepository authRepository)
+        public LoginUserQueryHandler(IAuthRepository authRepository)
         {
             _authRepository = authRepository;
         }
