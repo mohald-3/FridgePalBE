@@ -1,7 +1,6 @@
-﻿using Domain.Models.User;
+﻿using Application.Interfaces.Repositories.Users;
+using Domain.Models.User;
 using FluentValidation;
-using Infrastructure.Repositories.Users;
-
 
 namespace Application.Commands.Users.Register
 {

@@ -1,7 +1,7 @@
 ﻿using Application.Exceptions;
+using Application.Interfaces.Repositories.Users;
 using Application.Validators.User;
 using Domain.Models.User;
-using Infrastructure.Repositories.Users;
 using MediatR;
 namespace Application.Commands.Users.Register
 {

@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using Domain.Models.Category;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database.DatabaseHelpers
@@ -7,23 +8,24 @@ namespace Infrastructure.Database.DatabaseHelpers
     {
         public static void SeedData(ModelBuilder modelBuilder)
         {
-            SeedDogs(modelBuilder);
+            CategoryData(modelBuilder);
             // Add more methods for other entities as needed
         }
 
-        private static void SeedDogs(ModelBuilder modelBuilder)
+        public static void CategoryData(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Dog>().HasData(
-                new Dog { Id = Guid.NewGuid(), Name = "OldG" },
-                new Dog { Id = Guid.NewGuid(), Name = "NewG" },
-                new Dog { Id = Guid.NewGuid(), Name = "Björn" },
-                new Dog { Id = Guid.NewGuid(), Name = "Patrik" },
-                new Dog { Id = Guid.NewGuid(), Name = "Alfred" },
-                new Dog { Id = new Guid("12345678-1234-5678-1234-567812345671"), Name = "TestDogForUnitTests1" },
-                new Dog { Id = new Guid("12345678-1234-5678-1234-567812345672"), Name = "TestDogForUnitTests2" },
-                new Dog { Id = new Guid("12345678-1234-5678-1234-567812345673"), Name = "TestDogForUnitTests3" },
-                new Dog { Id = new Guid("12345678-1234-5678-1234-567812345674"), Name = "TestDogForUnitTests4" }
+            // Seed Categories
+            modelBuilder.Entity<CategoryModel>().HasData(
+                new CategoryModel { Id = 1, CategoryName = "Dairy" },
+                new CategoryModel { Id = 2, CategoryName = "Meat" },
+                new CategoryModel { Id = 3, CategoryName = "Vegetables" },
+                new CategoryModel { Id = 4, CategoryName = "Fruits" },
+                new CategoryModel { Id = 5, CategoryName = "Fish" },
+                new CategoryModel { Id = 6, CategoryName = "Beverages" },
+                new CategoryModel { Id = 7, CategoryName = "Frozen" },
+                new CategoryModel { Id = 8, CategoryName = "Other" }
             );
         }
+
     }
 }
