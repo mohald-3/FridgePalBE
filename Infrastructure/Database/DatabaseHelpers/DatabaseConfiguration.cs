@@ -1,9 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 namespace Infrastructure.Database.DatabaseHelpers
 {
@@ -11,7 +8,8 @@ namespace Infrastructure.Database.DatabaseHelpers
     {
         public void Configure(DbContextOptionsBuilder optionsBuilder, string connectionString)
         {
-            optionsBuilder.UseSqlServer(connectionString).AddInterceptors(new CommandLoggingInterceptor()); ;
+            optionsBuilder.UseNpgsql(connectionString)
+                          .AddInterceptors(new CommandLoggingInterceptor());
             // Additional configuration logic here
         }
     }

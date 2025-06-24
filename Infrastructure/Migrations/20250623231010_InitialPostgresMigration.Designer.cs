@@ -3,17 +3,17 @@ using System;
 using Infrastructure.Database.MySQLDatabase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(RealDatabase))]
-    [Migration("20250622175444_SeedInitialCategories")]
-    partial class SeedInitialCategories
+    [Migration("20250623231010_InitialPostgresMigration")]
+    partial class InitialPostgresMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,21 +21,21 @@ namespace Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.17")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Domain.Models.Category.CategoryModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CategoryName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -84,92 +84,30 @@ namespace Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Models.Dog", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Dogs");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("dd3893ba-a10d-4456-879d-edee6406dfd3"),
-                            Name = "OldG"
-                        },
-                        new
-                        {
-                            Id = new Guid("fa259d8c-07e1-4984-a705-a7ec954c04c4"),
-                            Name = "NewG"
-                        },
-                        new
-                        {
-                            Id = new Guid("a39dde9a-c014-4625-ab90-8d39afd349ee"),
-                            Name = "Björn"
-                        },
-                        new
-                        {
-                            Id = new Guid("870fdf55-057a-42bc-bfa0-3d9520f2d32e"),
-                            Name = "Patrik"
-                        },
-                        new
-                        {
-                            Id = new Guid("22b1a097-93be-4bc9-8613-99a0fd977d8d"),
-                            Name = "Alfred"
-                        },
-                        new
-                        {
-                            Id = new Guid("12345678-1234-5678-1234-567812345671"),
-                            Name = "TestDogForUnitTests1"
-                        },
-                        new
-                        {
-                            Id = new Guid("12345678-1234-5678-1234-567812345672"),
-                            Name = "TestDogForUnitTests2"
-                        },
-                        new
-                        {
-                            Id = new Guid("12345678-1234-5678-1234-567812345673"),
-                            Name = "TestDogForUnitTests3"
-                        },
-                        new
-                        {
-                            Id = new Guid("12345678-1234-5678-1234-567812345674"),
-                            Name = "TestDogForUnitTests4"
-                        });
-                });
-
             modelBuilder.Entity("Domain.Models.Item.ItemModel", b =>
                 {
                     b.Property<Guid>("ItemId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("ExpirationDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("Notified")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("ProductName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("Quantity")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("ItemId");
 
@@ -182,15 +120,15 @@ namespace Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserPassword")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

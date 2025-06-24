@@ -23,7 +23,7 @@ namespace Infrastructure
 
             services.AddDbContext<RealDatabase>(options =>
             {
-                options.UseSqlServer(connectionString).AddInterceptors(new CommandLoggingInterceptor());
+                options.UseNpgsql(connectionString).AddInterceptors(new CommandLoggingInterceptor());
             });
 
             return services;
