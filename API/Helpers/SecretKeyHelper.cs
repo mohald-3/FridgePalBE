@@ -18,14 +18,14 @@ namespace API.Helpers
 
         public static string GetSecretConnectionString(IConfiguration configuration)
         {
-            var secretConnectionString = configuration["ConnectionString:SecretNemoDatabaseConnectionString"];
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-            if (string.IsNullOrEmpty(secretConnectionString))
+            if (string.IsNullOrEmpty(connectionString))
             {
                 throw new InvalidOperationException("ConnectionString:SecretConnectionString is missing or invalid in appsettings.json.");
             }
 
-            return secretConnectionString;
+            return connectionString;
         }
     }
 }

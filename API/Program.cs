@@ -9,6 +9,10 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
+DotNetEnv.Env.Load(); // Load .env file
+
+builder.Configuration.AddEnvironmentVariables();
+
 var secretKey = SecretKeyHelper.GetSecretKey(builder.Configuration);
 
 builder.Services.AddMyCustomAuthentication(secretKey);
@@ -27,9 +31,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, Configuration>();
 
-var secretConnectionString = SecretKeyHelper.GetSecretConnectionString(builder.Configuration);
+var ConnectionString = SecretKeyHelper.GetSecretConnectionString(builder.Configuration);
 
-builder.Services.AddApplication().AddInfrastructure(secretConnectionString);
+builder.Services.AddApplication().AddInfrastructure(ConnectionString);
 
 var app = builder.Build();
 
