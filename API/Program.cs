@@ -6,6 +6,7 @@ using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +35,8 @@ builder.Services.AddCors(options =>
             "http://localhost:8081",
             "http://192.168.0.13:8081",
             "http://192.168.0.13:5000",
-            "https://localhost:5001"
+            "https://192.168.0.13:7024",
+            "https://localhost:7024"
             ) // Replace with your FE URL
                .AllowAnyHeader()
                .AllowAnyMethod();
