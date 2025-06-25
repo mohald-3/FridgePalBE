@@ -4,22 +4,6 @@
 
 ---
 
-## 🧩 MVP User Stories
-
-- ✅ As a user, I want to manually add an item to my list
-- ✅ As a user, I want to remove an item from my list
-- ⌛ As a user, I want to scan a product barcode to automatically get the product name and category
-- ⌛ As a user, I want to scan an item (e.g., fruit/vegetable) to auto-extract name and category
-- ⌛ As a user, I want to scan and auto-extract expiration date
-- ⌛ As a user, I want to get notified when an item is about to expire
-- ⌛ As a user, I want to choose whether I get notified or not
-- ⌛ As a user, I want to choose *how* I get notified
-- ⌛ As a user, I want to set custom notification timing
-- 🚫 As a new user, I want to register a new account *(Not in MVP)*
-- 🚫 As a user, I want to log in to my account *(Not in MVP)*
-
----
-
 ## 🏗️ Technologies & Architecture
 
 FridgePalBE follows **Clean Architecture** and uses:
