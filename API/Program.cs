@@ -14,6 +14,10 @@ DotNetEnv.Env.Load(); // Load .env file
 
 builder.Configuration.AddEnvironmentVariables();
 
+var allowedOrigins = builder.Configuration["CORS_ALLOWED_ORIGINS"]
+                     ?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                     ?? Array.Empty<string>();
+
 var secretKey = SecretKeyHelper.GetSecretKey(builder.Configuration);
 
 builder.Services.AddMyCustomAuthentication(secretKey);
@@ -31,14 +35,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", builder =>
     {
-        builder.WithOrigins(
-            "http://localhost:8081",
-            "http://192.168.0.13:8081",
-            "http://192.168.0.13:5000",
-            "https://192.168.0.13:7024",
-            "http://192.168.0.13:7024",
-            "https://localhost:7024"
-            ) // Replace with your FE URL
+        builder.WithOrigins(allowedOrigins) // Replace with your FE URL
                .AllowAnyHeader()
                .AllowAnyMethod();
     });
