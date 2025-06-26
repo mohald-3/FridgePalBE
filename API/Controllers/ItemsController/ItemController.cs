@@ -28,6 +28,7 @@ namespace API.Controllers.ItemsController
         [Route("getAllItems")]
         public async Task<IActionResult> GetAllItems()
         {
+            Console.WriteLine("📱 Request received from mobile frontend");
             var result = await _mediator.Send(new GetAllItemsQuery());
 
             if (!result.IsSuccess)
@@ -41,6 +42,7 @@ namespace API.Controllers.ItemsController
         [Route("getItemById/{id}")]
         public async Task<IActionResult> GetItemById(Guid id)
         {
+            Console.WriteLine("📱 Request received from mobile frontend");
             var result = await _mediator.Send(new GetItemByIdQuery(id));
 
             if (!result.IsSuccess)
@@ -55,6 +57,7 @@ namespace API.Controllers.ItemsController
         [ProducesResponseType(typeof(ItemResponseDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddItem([FromBody] ItemDto newItem)
         {
+            Console.WriteLine("📱 Request received from mobile frontend");
             var validatedItem = _itemValidator.Validate(newItem);
 
             if (!validatedItem.IsValid)
@@ -76,6 +79,7 @@ namespace API.Controllers.ItemsController
         [Route("updateItem/{itemId}")]
         public async Task<IActionResult> UpdateItem(Guid itemId, [FromBody] ItemDto updatedItem)
         {
+            Console.WriteLine("📱 Request received from mobile frontend");
             var validationResult = _itemValidator.Validate(updatedItem);
 
             if (!validationResult.IsValid)
@@ -91,6 +95,7 @@ namespace API.Controllers.ItemsController
         [Route("deleteItem/{itemId}")]
         public async Task<IActionResult> DeleteItem(Guid itemId)
         {
+            Console.WriteLine("📱 Request received from mobile frontend");
             var result = await _mediator.Send(new DeleteItemCommand(itemId));
 
             if (!result.IsSuccess)
