@@ -36,6 +36,7 @@ builder.Services.AddCors(options =>
             "http://192.168.0.13:8081",
             "http://192.168.0.13:5000",
             "https://192.168.0.13:7024",
+            "http://192.168.0.13:7024",
             "https://localhost:7024"
             ) // Replace with your FE URL
                .AllowAnyHeader()
