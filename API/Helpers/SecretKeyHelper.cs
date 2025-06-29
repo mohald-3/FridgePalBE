@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Infrastructure.Configuration;
+using System.Text;
 
 namespace API.Helpers
 {
@@ -26,6 +27,27 @@ namespace API.Helpers
             }
 
             return connectionString;
+        }
+
+        public static CloudinarySettings GetCloudinarySettings(IConfiguration configuration)
+        {
+            var section = configuration.GetSection("Cloudinary");
+
+            var cloudName = section["CloudName"];
+            var apiKey = section["ApiKey"];
+            var apiSecret = section["ApiSecret"];
+
+            if (string.IsNullOrWhiteSpace(cloudName) || string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(apiSecret))
+            {
+                throw new InvalidOperationException("Cloudinary settings are missing or invalid in configuration.");
+            }
+
+            return new CloudinarySettings
+            {
+                CloudName = cloudName,
+                ApiKey = apiKey,
+                ApiSecret = apiSecret
+            };
         }
     }
 }

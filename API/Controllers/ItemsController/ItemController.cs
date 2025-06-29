@@ -1,5 +1,6 @@
 ﻿using Application.Commands.Items.AddItem;
 using Application.Commands.Items.DeleteItem;
+using Application.Commands.Items.RecognizeItem;
 using Application.Commands.Items.UpdateItem;
 using Application.Dtos.Items;
 using Application.Queries.Items.GetAll;

@@ -9,16 +9,22 @@ namespace Infrastructure.Database
     {
         public RealDatabase CreateDbContext(string[] args)
         {
-            // Load configuration from appsettings.json
+            // Load .env from API folder if needed
+            var envPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "API", ".env");
+            DotNetEnv.Env.Load(envPath);
+
+            // Now build configuration from environment variables
             var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables()
                 .Build();
 
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            var connectionString = configuration.GetConnectionString("DefaultConnection")
+                                   ?? configuration["ConnectionStrings__DefaultConnection"]; // fallback
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new InvalidOperationException("Connection string not found in environment variables.");
 
             var optionsBuilder = new DbContextOptionsBuilder<RealDatabase>();
-
             optionsBuilder.UseNpgsql(connectionString);
 
             return new RealDatabase(optionsBuilder.Options);
