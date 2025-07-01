@@ -14,17 +14,18 @@ namespace Application.Queries.Items.GetAll
         {
             var items = await _repo.GetAllAsync();
 
-            var result = items.Select(i => new ItemResponseDto
+            var result = items.Select(item => new ItemResponseDto
             {
-                ItemId = i.ItemId,
-                ProductName = i.ProductName,
-                Quantity = i.Quantity,
-                ExpirationDate = i.ExpirationDate,
-                CreationDate = i.CreationDate,
-                Notified = i.Notified,
-                CategoryId = i.CategoryId,
-                CategoryName = i.Category?.CategoryName
-            }).ToList();
+                ItemId = item.ItemId,
+                ProductName = item.ProductName,
+                Quantity = item.Quantity,
+                ExpirationDate = item.ExpirationDate,
+                CreationDate = item.CreationDate,
+                Notified = item.Notified,
+                CategoryId = item.CategoryId,
+                CategoryName = item.Category?.CategoryName,
+                ImageUrl = item.ImageUrl
+    }).ToList();
 
             return OperationResult<List<ItemResponseDto>>.Ok(result);
         }

@@ -26,7 +26,8 @@ namespace Application.Queries.Items.GetById
                 CreationDate = item.CreationDate,
                 Notified = item.Notified,
                 CategoryId = item.CategoryId,
-                CategoryName = item.Category?.CategoryName
+                CategoryName = item.Category?.CategoryName,
+                ImageUrl = item.ImageUrl
             };
 
             return OperationResult<ItemResponseDto>.Ok(result);
