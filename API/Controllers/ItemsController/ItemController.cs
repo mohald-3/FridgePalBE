@@ -1,12 +1,13 @@
 ﻿using Application.Commands.Items.AddItem;
 using Application.Commands.Items.DeleteItem;
+using Application.Commands.Items.PatchItem;
 using Application.Commands.Items.RecognizeItem;
-using Application.Commands.Items.UpdateItem;
 using Application.Dtos.Items;
 using Application.Interfaces.Services.Images;
 using Application.Queries.Items.GetAll;
 using Application.Queries.Items.GetById;
 using Application.Validators.Item;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,12 +22,20 @@ namespace API.Controllers.ItemsController
         private readonly ItemDtoValidator _itemValidator;
         private readonly IImageStorageService _imageService;
         private readonly ItemWithImageDtoValidator _itemWithImageValidator;
+        private readonly UpdateItemPartialDtoValidator _updateItemPartialDtoValidator;
 
-        public ItemController(IMediator mediator, ItemDtoValidator itemValidator, ItemWithImageDtoValidator itemWithImageValidator, IImageStorageService imageService)
+
+
+        public ItemController(IMediator mediator,
+            ItemDtoValidator itemValidator, 
+            ItemWithImageDtoValidator itemWithImageValidator,
+            UpdateItemPartialDtoValidator patchValidator,
+            IImageStorageService imageService)
         {
             _mediator = mediator;
             _itemValidator = itemValidator;
             _itemWithImageValidator = itemWithImageValidator;
+            _updateItemPartialDtoValidator = patchValidator;
             _imageService = imageService;
         }
 
@@ -89,20 +98,24 @@ namespace API.Controllers.ItemsController
             return Ok(result.Result);
         }
 
-        [HttpPut]
+        [HttpPatch]
         [Route("updateItem/{itemId}")]
-        public async Task<IActionResult> UpdateItem(Guid itemId, [FromBody] ItemDto updatedItem)
+        public async Task<IActionResult> PatchItem(Guid itemId, [FromForm] UpdateItemPartialDto updatedFields)
         {
-            Console.WriteLine("📱 Request received from mobile frontend");
-            var validationResult = _itemValidator.Validate(updatedItem);
+            Console.WriteLine("📱 PATCH request from mobile frontend");
 
+            var validationResult = _updateItemPartialDtoValidator.Validate(updatedFields);
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
             }
 
-            var result = await _mediator.Send(new UpdateItemCommand(itemId, updatedItem));
-            return Ok(result);
+            var result = await _mediator.Send(new PatchItemCommand(itemId, updatedFields));
+
+            if (!result.IsSuccess)
+                return BadRequest(result.ErrorMessage);
+
+            return Ok(result.Result);
         }
 
         [HttpDelete]

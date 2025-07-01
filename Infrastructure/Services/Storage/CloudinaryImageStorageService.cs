@@ -39,5 +39,15 @@ namespace Infrastructure.Services.Storage
 
             return uploadResult.SecureUrl.ToString();
         }
+
+        public async Task DeleteImageAsync(string imageUrl)
+        {
+            var publicId = Path.GetFileNameWithoutExtension(new Uri(imageUrl).AbsolutePath);
+            var deletionParams = new DeletionParams(publicId);
+            var result = await _cloudinary.DestroyAsync(deletionParams);
+
+            if (result.Result != "ok")
+                throw new ApplicationException("Cloudinary image deletion failed: " + result.Error?.Message);
+        }
     }
 }
