@@ -3,11 +3,13 @@ using Application.Commands.Items.DeleteItem;
 using Application.Commands.Items.RecognizeItem;
 using Application.Commands.Items.UpdateItem;
 using Application.Dtos.Items;
+using Application.Interfaces.Services.Images;
 using Application.Queries.Items.GetAll;
 using Application.Queries.Items.GetById;
 using Application.Validators.Item;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace API.Controllers.ItemsController
 {
@@ -17,11 +19,15 @@ namespace API.Controllers.ItemsController
     {
         private readonly IMediator _mediator;
         private readonly ItemDtoValidator _itemValidator;
+        private readonly IImageStorageService _imageService;
+        private readonly ItemWithImageDtoValidator _itemWithImageValidator;
 
-        public ItemController(IMediator mediator, ItemDtoValidator itemValidator)
+        public ItemController(IMediator mediator, ItemDtoValidator itemValidator, ItemWithImageDtoValidator itemWithImageValidator, IImageStorageService imageService)
         {
             _mediator = mediator;
             _itemValidator = itemValidator;
+            _itemWithImageValidator = itemWithImageValidator;
+            _imageService = imageService;
         }
 
         // GET: api/items/getAllItems
@@ -56,17 +62,24 @@ namespace API.Controllers.ItemsController
         [HttpPost]
         [Route("addNewItem")]
         [ProducesResponseType(typeof(ItemResponseDto), StatusCodes.Status200OK)]
-        public async Task<IActionResult> AddItem([FromBody] ItemDto newItem)
+        public async Task<IActionResult> AddItem([FromForm] ItemWithImageDto newItem)
         {
             Console.WriteLine("📱 Request received from mobile frontend");
-            var validatedItem = _itemValidator.Validate(newItem);
+
+            var validatedItem = _itemWithImageValidator.Validate(newItem);
 
             if (!validatedItem.IsValid)
             {
                 return BadRequest(validatedItem.Errors.ConvertAll(error => error.ErrorMessage));
             }
 
-            var result = await _mediator.Send(new AddItemCommand(newItem));
+            var imageUrl = string.Empty;
+            if (newItem.Image != null && newItem.Image.Length > 0)
+            {
+                imageUrl = await _imageService.UploadImageAsync(newItem.Image);
+            }
+
+            var result = await _mediator.Send(new AddItemCommand(newItem, imageUrl));
 
             if (!result.IsSuccess)
             {
