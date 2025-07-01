@@ -6,11 +6,24 @@ using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Collections;
 using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
 DotNetEnv.Env.Load(); // Load .env file
+
+// Manually sync environment variables loaded by DotNetEnv (.env file)
+// into builder.Configuration, so they are accessible via IConfiguration["Key"]
+foreach (DictionaryEntry entry in Environment.GetEnvironmentVariables())
+{
+    var key = entry.Key?.ToString();
+    var value = entry.Value?.ToString();
+    if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(value))
+    {
+        builder.Configuration[key] = value;
+    }
+}
 
 builder.Configuration.AddEnvironmentVariables();
 
@@ -18,6 +31,7 @@ builder.Configuration.AddEnvironmentVariables();
 var secretKey = SecretKeyHelper.GetSecretKey(builder.Configuration);
 var cloudinarySettings = SecretKeyHelper.GetCloudinarySettings(builder.Configuration);
 var ConnectionString = SecretKeyHelper.GetSecretConnectionString(builder.Configuration);
+var openAIApiKey = SecretKeyHelper.GetOpenAIApiKey(builder.Configuration);
 
 var allowedOrigins = builder.Configuration["CORS_ALLOWED_ORIGINS"]
                      ?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)

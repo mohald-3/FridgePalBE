@@ -40,7 +40,8 @@ namespace Application.Commands.Items.PatchItem
                 if (!string.IsNullOrEmpty(item.ImageUrl))
                     await _imageService.DeleteImageAsync(item.ImageUrl);
 
-                item.ImageUrl = await _imageService.UploadImageAsync(dto.Image);
+                var uploadedUrl = await _imageService.UploadImageAsync(dto.Image);
+                item.ImageUrl = string.IsNullOrWhiteSpace(uploadedUrl) ? null : uploadedUrl;
             }
 
             var updated = await _repo.UpdateAsync(request.ItemId, item);

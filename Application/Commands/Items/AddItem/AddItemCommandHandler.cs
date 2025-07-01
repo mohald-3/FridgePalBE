@@ -22,7 +22,7 @@ namespace Application.Commands.Items.AddItem
                 CategoryId = request.Item.CategoryId,
                 CreationDate = DateTime.UtcNow,
                 Notified = false,
-                ImageUrl = request.ImageUrl // save image URL
+                ImageUrl = request.ImageUrl
             };
 
             var saved = await _repo.AddAsync(model);

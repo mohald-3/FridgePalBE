@@ -49,5 +49,17 @@ namespace API.Helpers
                 ApiSecret = apiSecret
             };
         }
+
+        public static string GetOpenAIApiKey(IConfiguration configuration)
+        {
+            var apiKey = configuration["OpenAI:ApiKey"];
+
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                throw new InvalidOperationException("OpenAI:ApiKey is missing or invalid in appsettings.json or environment.");
+            }
+
+            return apiKey;
+        }
     }
 }

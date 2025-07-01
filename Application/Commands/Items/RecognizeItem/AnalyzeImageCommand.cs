@@ -4,13 +4,14 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Commands.Items.RecognizeItem
 {
-    public class RecognizeItemCommand : IRequest<RecognizedItemDto>
+    public class AnalyzeImageCommand : IRequest<AnalyzeImageResponseDto>
     {
         public IFormFile Image { get; set; }
 
-        public RecognizeItemCommand(IFormFile image)
+        public AnalyzeImageCommand(IFormFile image)
         {
             Image = image;
         }
     }
+
 }
