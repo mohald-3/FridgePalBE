@@ -1,5 +1,4 @@
-﻿using Application.Dtos.Users;
-using Application.Interfaces.Repositories.Authentication;
+﻿using Application.Interfaces.Repositories.Authentication;
 using MediatR;
 
 namespace Application.Queries.Users.Login

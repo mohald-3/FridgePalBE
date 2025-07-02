@@ -7,9 +7,9 @@ namespace Application.Commands.Items.PatchItem
     public class PatchItemCommand : IRequest<OperationResult<ItemResponseDto>>
     {
         public Guid ItemId { get; }
-        public UpdateItemPartialDto PartialItem { get; }
+        public PatchItemDto PartialItem { get; }
 
-        public PatchItemCommand(Guid itemId, UpdateItemPartialDto partialItem)
+        public PatchItemCommand(Guid itemId, PatchItemDto partialItem)
         {
             ItemId = itemId;
             PartialItem = partialItem;

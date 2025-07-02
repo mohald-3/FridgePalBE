@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections;
-using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,9 +61,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, Configuration>();
-
-
-builder.Services.AddApplication().AddInfrastructure(ConnectionString, builder.Configuration);
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(ConnectionString, builder.Configuration);
 
 var app = builder.Build();
 
@@ -74,18 +72,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseHttpsRedirection();
-
 app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 
 app.MapControllers();
-
-
-var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
-logger.LogInformation("Cloudinary:CloudName = {CloudName}", cloudinarySettings.CloudName);
-logger.LogInformation("JWT Secret = {Secret}", secretKey[..5] + "*****");
-logger.LogInformation("DB Connection = {Connection}", ConnectionString[..20] + "...");
 
 app.Run();

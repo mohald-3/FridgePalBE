@@ -1,5 +1,4 @@
-﻿using Domain.Models;
-using Domain.Models.Category;
+﻿using Domain.Models.Category;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database.DatabaseHelpers

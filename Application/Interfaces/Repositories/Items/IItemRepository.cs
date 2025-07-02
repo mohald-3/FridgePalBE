@@ -1,6 +1,4 @@
-﻿using Application.Dtos.Items;
-using Domain.Models.Item;
-using System.Threading.Tasks;
+﻿using Domain.Models.Item;
 
 namespace Application.Interfaces.Repositories.Items
 {

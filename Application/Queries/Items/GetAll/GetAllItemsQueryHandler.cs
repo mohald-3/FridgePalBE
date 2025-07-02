@@ -25,7 +25,7 @@ namespace Application.Queries.Items.GetAll
                 CategoryId = item.CategoryId,
                 CategoryName = item.Category?.CategoryName,
                 ImageUrl = item.ImageUrl
-    }).ToList();
+            }).ToList();
 
             return OperationResult<List<ItemResponseDto>>.Ok(result);
         }

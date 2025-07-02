@@ -11,7 +11,7 @@ namespace Application.Validators.Category
                 .NotEmpty().WithMessage("Category name is required")
                 .MaximumLength(50).WithMessage("Category name can't exceed 50 characters");
 
-            // can add this later to prevent duplicates
+            // Prevents duplicates
             //RuleFor(x => x.CategoryName)
             //  .MustAsync(BeUniqueCategoryName).WithMessage("Category name already exists");
         }

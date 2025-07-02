@@ -7,7 +7,6 @@ using Application.Interfaces.Services.Images;
 using Application.Queries.Items.GetAll;
 using Application.Queries.Items.GetById;
 using Application.Validators.Item;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,16 +19,16 @@ namespace API.Controllers.ItemsController
     {
         private readonly IMediator _mediator;
         private readonly IImageStorageService _imageService;
-        private readonly AddItemDtoValidator _itemWithImageValidator;
+        private readonly AddItemDtoValidator _itemValidator;
         private readonly UpdateItemPartialDtoValidator _updateItemPartialDtoValidator;
 
         public ItemController(IMediator mediator,
-            AddItemDtoValidator itemWithImageValidator, 
+            AddItemDtoValidator itemValidator, 
             UpdateItemPartialDtoValidator patchValidator, 
             IImageStorageService imageService)
         {
             _mediator = mediator;
-            _itemWithImageValidator = itemWithImageValidator;
+            _itemValidator = itemValidator;
             _updateItemPartialDtoValidator = patchValidator;
             _imageService = imageService;
         }
@@ -63,10 +62,10 @@ namespace API.Controllers.ItemsController
         [HttpPost]
         [Route("addNewItem")]
         [ProducesResponseType(typeof(ItemResponseDto), StatusCodes.Status200OK)]
-        public async Task<IActionResult> AddItem([FromForm] ItemWithImageDto newItem)
+        public async Task<IActionResult> AddItem([FromForm] ItemDto newItem)
         {
             // Validation
-            var validatedItem = _itemWithImageValidator.Validate(newItem);
+            var validatedItem = _itemValidator.Validate(newItem);
             if (!validatedItem.IsValid)
             {
                 return BadRequest(validatedItem.Errors.ConvertAll(error => error.ErrorMessage));
@@ -93,7 +92,7 @@ namespace API.Controllers.ItemsController
 
         [HttpPatch]
         [Route("updateItem/{itemId}")]
-        public async Task<IActionResult> PatchItem(Guid itemId, [FromForm] UpdateItemPartialDto updatedFields)
+        public async Task<IActionResult> PatchItem(Guid itemId, [FromForm] PatchItemDto updatedFields)
         {
             // Validation for the input fields
             var validationResult = _updateItemPartialDtoValidator.Validate(updatedFields);
