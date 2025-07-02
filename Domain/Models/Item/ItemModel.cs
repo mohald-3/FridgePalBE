@@ -22,6 +22,8 @@ namespace Domain.Models.Item
 
         public int CategoryId { get; set; }
 
+        public string? ImageUrl { get; set; }
+
         // Optional: Navigation property
 
         //public User? User { get; set; }

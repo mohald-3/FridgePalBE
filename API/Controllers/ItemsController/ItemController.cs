@@ -1,12 +1,16 @@
 ﻿using Application.Commands.Items.AddItem;
 using Application.Commands.Items.DeleteItem;
-using Application.Commands.Items.UpdateItem;
+using Application.Commands.Items.PatchItem;
+using Application.Commands.Items.RecognizeItem;
 using Application.Dtos.Items;
+using Application.Interfaces.Services.Images;
 using Application.Queries.Items.GetAll;
 using Application.Queries.Items.GetById;
 using Application.Validators.Item;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace API.Controllers.ItemsController
 {
@@ -15,12 +19,19 @@ namespace API.Controllers.ItemsController
     public class ItemController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly ItemDtoValidator _itemValidator;
+        private readonly IImageStorageService _imageService;
+        private readonly AddItemDtoValidator _itemWithImageValidator;
+        private readonly UpdateItemPartialDtoValidator _updateItemPartialDtoValidator;
 
-        public ItemController(IMediator mediator, ItemDtoValidator itemValidator)
+        public ItemController(IMediator mediator,
+            AddItemDtoValidator itemWithImageValidator, 
+            UpdateItemPartialDtoValidator patchValidator, 
+            IImageStorageService imageService)
         {
             _mediator = mediator;
-            _itemValidator = itemValidator;
+            _itemWithImageValidator = itemWithImageValidator;
+            _updateItemPartialDtoValidator = patchValidator;
+            _imageService = imageService;
         }
 
         // GET: api/items/getAllItems
@@ -28,7 +39,6 @@ namespace API.Controllers.ItemsController
         [Route("getAllItems")]
         public async Task<IActionResult> GetAllItems()
         {
-            Console.WriteLine("📱 Request received from mobile frontend");
             var result = await _mediator.Send(new GetAllItemsQuery());
 
             if (!result.IsSuccess)
@@ -42,7 +52,6 @@ namespace API.Controllers.ItemsController
         [Route("getItemById/{id}")]
         public async Task<IActionResult> GetItemById(Guid id)
         {
-            Console.WriteLine("📱 Request received from mobile frontend");
             var result = await _mediator.Send(new GetItemByIdQuery(id));
 
             if (!result.IsSuccess)
@@ -51,21 +60,28 @@ namespace API.Controllers.ItemsController
             return Ok(result.Result);
         }
 
-        // POST: api/items/addNewItem
         [HttpPost]
         [Route("addNewItem")]
         [ProducesResponseType(typeof(ItemResponseDto), StatusCodes.Status200OK)]
-        public async Task<IActionResult> AddItem([FromBody] ItemDto newItem)
+        public async Task<IActionResult> AddItem([FromForm] ItemWithImageDto newItem)
         {
-            Console.WriteLine("📱 Request received from mobile frontend");
-            var validatedItem = _itemValidator.Validate(newItem);
-
+            // Validation
+            var validatedItem = _itemWithImageValidator.Validate(newItem);
             if (!validatedItem.IsValid)
             {
                 return BadRequest(validatedItem.Errors.ConvertAll(error => error.ErrorMessage));
             }
 
-            var result = await _mediator.Send(new AddItemCommand(newItem));
+            // uploading image to cloudinary
+            string? imageUrl = null;
+            if (newItem.Image != null && newItem.Image.Length > 0)
+            {
+                var uploadedUrl = await _imageService.UploadImageAsync(newItem.Image);
+                imageUrl = string.IsNullOrWhiteSpace(uploadedUrl) ? null : uploadedUrl;
+            }
+
+            // Adding the item to the DB
+            var result = await _mediator.Send(new AddItemCommand(newItem, imageUrl));
 
             if (!result.IsSuccess)
             {
@@ -75,27 +91,30 @@ namespace API.Controllers.ItemsController
             return Ok(result.Result);
         }
 
-        [HttpPut]
+        [HttpPatch]
         [Route("updateItem/{itemId}")]
-        public async Task<IActionResult> UpdateItem(Guid itemId, [FromBody] ItemDto updatedItem)
+        public async Task<IActionResult> PatchItem(Guid itemId, [FromForm] UpdateItemPartialDto updatedFields)
         {
-            Console.WriteLine("📱 Request received from mobile frontend");
-            var validationResult = _itemValidator.Validate(updatedItem);
-
+            // Validation for the input fields
+            var validationResult = _updateItemPartialDtoValidator.Validate(updatedFields);
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
             }
 
-            var result = await _mediator.Send(new UpdateItemCommand(itemId, updatedItem));
-            return Ok(result);
+            // Patching the item
+            var result = await _mediator.Send(new PatchItemCommand(itemId, updatedFields));
+
+            if (!result.IsSuccess)
+                return BadRequest(result.ErrorMessage);
+
+            return Ok(result.Result);
         }
 
         [HttpDelete]
         [Route("deleteItem/{itemId}")]
         public async Task<IActionResult> DeleteItem(Guid itemId)
         {
-            Console.WriteLine("📱 Request received from mobile frontend");
             var result = await _mediator.Send(new DeleteItemCommand(itemId));
 
             if (!result.IsSuccess)
@@ -104,5 +123,12 @@ namespace API.Controllers.ItemsController
             return Ok(result.Result);
         }
 
+        [HttpPost("analyze-image")]
+        public async Task<IActionResult> AnalyzeImage([FromForm] AnalyzeImageRequestDto dto)
+        {
+            var command = new AnalyzeImageCommand(dto.Image);
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
     }
 }

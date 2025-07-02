@@ -1,25 +1,30 @@
 ﻿using Application.Dtos.Items;
 using FluentValidation;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Application.Validators.Item
 {
-    public class AddItemDtoValidator : AbstractValidator<AddItemDto>
+    public class AddItemDtoValidator : AbstractValidator<ItemWithImageDto>
     {
         public AddItemDtoValidator()
         {
-            RuleFor(x => x.ItemName)
-                .NotEmpty().WithMessage("Item name is required")
+            RuleFor(x => x.ProductName)
+                .NotEmpty().WithMessage("Product name is required")
                 .MaximumLength(100);
 
             RuleFor(x => x.Quantity)
-                .GreaterThan(0).WithMessage("Quantity must be at least 1");
+                .GreaterThanOrEqualTo(0);
 
             RuleFor(x => x.ExpirationDate)
-                .Must(date => date > DateTime.UtcNow)
-                .WithMessage("Expiration date must be in the future");
+                .GreaterThan(DateTime.UtcNow).WithMessage("Expiration date must be in the future");
 
-            RuleFor(x => x.Category)
-                .GreaterThan(0).WithMessage("Category is required");
+            RuleFor(x => x.CategoryId)
+                .GreaterThan(0).WithMessage("Category must be selected");
+
         }
     }
 }

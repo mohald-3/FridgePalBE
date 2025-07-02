@@ -8,7 +8,7 @@ namespace API.Swagger
     {
         public void Configure(SwaggerGenOptions options)
         {
-            options.SwaggerDoc("v1", new OpenApiInfo { Title = "Nemanja Milosavljevic", Version = "v1" });
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "FridgePal", Version = "v1" });
 
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {

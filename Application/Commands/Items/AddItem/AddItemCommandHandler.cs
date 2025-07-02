@@ -21,7 +21,8 @@ namespace Application.Commands.Items.AddItem
                 ExpirationDate = request.Item.ExpirationDate,
                 CategoryId = request.Item.CategoryId,
                 CreationDate = DateTime.UtcNow,
-                Notified = false
+                Notified = false,
+                ImageUrl = request.ImageUrl
             };
 
             var saved = await _repo.AddAsync(model);
@@ -34,7 +35,8 @@ namespace Application.Commands.Items.AddItem
                 ExpirationDate = saved.ExpirationDate,
                 CreationDate = saved.CreationDate,
                 Notified = saved.Notified,
-                CategoryId = saved.CategoryId
+                CategoryId = saved.CategoryId,
+                ImageUrl = saved.ImageUrl
             };
 
             return OperationResult<ItemResponseDto>.Ok(result);

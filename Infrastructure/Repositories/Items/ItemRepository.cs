@@ -3,6 +3,7 @@ using Application.Interfaces.Repositories.Items;
 using Domain.Models.Item;
 using Infrastructure.Database.MySQLDatabase;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories.Items
 {
