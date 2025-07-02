@@ -3,7 +3,9 @@
     public class AnalyzeImageResponseDto
     {
         public string ItemName { get; set; }
-        public string Category { get; set; }
-        public string ShelfLife { get; set; } // e.g., "5-7 days in fridge"
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
+        public int Quantity { get; set; }
+        public int ShelfLifeDays { get; set; }
     }
 }

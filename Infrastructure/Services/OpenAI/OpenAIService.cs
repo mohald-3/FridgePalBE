@@ -40,15 +40,33 @@ namespace Infrastructure.Services.OpenAI
 
             var base64ImageUrl = $"data:{image.ContentType};base64,{base64Image}";
 
-            var prompt = @"You are a smart fridge assistant.
-                        Respond ONLY with a valid JSON object using these exact keys:
-                        {
-                          ""itemName"": ""(name of the item)"",
-                          ""category"": ""(broad category like dairy, fruit, meat)"",
-                          ""shelfLife"": ""(approximate shelf life in 1 number if stored in fridge)""
-                        }
+            var prompt = @"
+                            You are a smart fridge assistant.
 
-                        Do not include explanation or markdown. Just pure JSON.";
+                            Here is the list of categories you must use:
+                            [
+                              { ""categoryId"": 1, ""categoryName"": ""Dairy"" },
+                              { ""categoryId"": 2, ""categoryName"": ""Meat"" },
+                              { ""categoryId"": 3, ""categoryName"": ""Vegetables"" },
+                              { ""categoryId"": 4, ""categoryName"": ""Fruits"" },
+                              { ""categoryId"": 5, ""categoryName"": ""Fish"" },
+                              { ""categoryId"": 6, ""categoryName"": ""Beverages"" },
+                              { ""categoryId"": 7, ""categoryName"": ""Frozen"" },
+                              { ""categoryId"": 8, ""categoryName"": ""Other"" }
+                            ]
+                            Estimate the quantity of the item visible in the image (e.g., 1 apple, 3 eggs, 2 bottles). Be realistic but approximate.
+
+                            Based on the image, respond ONLY with valid JSON in the following format:
+                            {
+                              ""itemName"": ""(name of the item)"",
+                              ""categoryId"": (integer, from the list above),
+                              ""quantity"": (integer, estimated quantity of the item in the image),
+
+                              ""categoryName"": ""(exact match from above)"",
+                              ""shelfLifeDays"": (approximate higher number of days the item lasts in a fridge),
+                            }
+
+                            Do not include explanation or markdown — only valid pure JSON.";
 
             var requestBody = new
             {
