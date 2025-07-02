@@ -22,7 +22,7 @@ namespace Application.Validators.Item
                 .When(x => x.Quantity.HasValue);
 
             RuleFor(x => x.ExpirationDate.Value)
-                .GreaterThan(DateTime.UtcNow).WithMessage("Expiration date must be in the future")
+                .GreaterThanOrEqualTo(DateTime.UtcNow).WithMessage("Expiration date must be in the future")
                 .When(x => x.ExpirationDate.HasValue);
 
             RuleFor(x => x.CategoryId.Value)
