@@ -4,6 +4,10 @@ using CloudinaryDotNet.Actions;
 using Infrastructure.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLaborsSize = SixLabors.ImageSharp.Size;
 
 namespace Infrastructure.Services.Storage
 {
@@ -23,10 +27,11 @@ namespace Infrastructure.Services.Storage
 
         public async Task<string> UploadImageAsync(IFormFile file)
         {
-            await using var stream = file.OpenReadStream();
+            var resizedImageBytes = await ResizeImageAsync(file, 400, 400); // resize before uploading
+
             var uploadParams = new ImageUploadParams
             {
-                File = new FileDescription(file.FileName, stream),
+                File = new FileDescription(file.FileName, new MemoryStream(resizedImageBytes)),
                 UseFilename = true,
                 UniqueFilename = true,
                 Overwrite = false
@@ -48,6 +53,22 @@ namespace Infrastructure.Services.Storage
 
             if (result.Result != "ok")
                 throw new ApplicationException("Cloudinary image deletion failed: " + result.Error?.Message);
+        }
+
+        // Resizing helping method
+        private async Task<byte[]> ResizeImageAsync(IFormFile uploadedFile, int maxWidth, int maxHeight)
+        {
+            using var image = await Image.LoadAsync(uploadedFile.OpenReadStream());
+
+            image.Mutate(x => x.Resize(new ResizeOptions
+            {
+                Size = new SixLaborsSize(maxWidth, maxHeight),
+                Mode = ResizeMode.Max
+            }));
+
+            using var ms = new MemoryStream();
+            await image.SaveAsJpegAsync(ms);
+            return ms.ToArray();
         }
     }
 }
