@@ -20,7 +20,7 @@ namespace Application.Validators.Item
                 .GreaterThanOrEqualTo(0);
 
             RuleFor(x => x.ExpirationDate)
-                .GreaterThan(DateTime.UtcNow).WithMessage("Expiration date must be in the future");
+                .GreaterThanOrEqualTo(DateTime.UtcNow.Date).WithMessage("Expiration date must be in the future");
 
             RuleFor(x => x.CategoryId)
                 .GreaterThan(0).WithMessage("Category must be selected");
