@@ -2,13 +2,9 @@
 using Application.Interfaces.Services.OpenAI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 
 namespace Infrastructure.Services.OpenAI

@@ -1,5 +1,4 @@
-﻿using Domain.Models;
-using Domain.Models.User;
+﻿using Domain.Models.User;
 
 namespace Infrastructure.Database
 {

@@ -3,11 +3,6 @@ using Application.Dtos.MediatR;
 using Application.Interfaces.Repositories.Items;
 using Application.Interfaces.Services.Images;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Commands.Items.PatchItem
 {

@@ -6,10 +6,10 @@ namespace Application.Commands.Items.AddItem
 {
     public class AddItemCommand : IRequest<OperationResult<ItemResponseDto>>
     {
-        public ItemWithImageDto Item { get; }
+        public ItemDto Item { get; }
         public string ImageUrl { get; }
 
-        public AddItemCommand(ItemWithImageDto item, string imageUrl)
+        public AddItemCommand(ItemDto item, string imageUrl)
         {
             Item = item;
             ImageUrl = imageUrl;

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Domain.Models.User
+﻿namespace Domain.Models.User
 {
     public class UserModel
     {

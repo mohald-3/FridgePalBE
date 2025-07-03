@@ -1,14 +1,9 @@
 ﻿using Application.Dtos.Items;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Validators.Item
 {
-    public class AddItemDtoValidator : AbstractValidator<ItemWithImageDto>
+    public class AddItemDtoValidator : AbstractValidator<ItemDto>
     {
         public AddItemDtoValidator()
         {
