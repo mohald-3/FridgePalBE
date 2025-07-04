@@ -1,24 +1,27 @@
 # FridgePalBE 🧊📲
 
-**FridgePalBE** is the backend API for FridgePal — a web application designed to help users keep track of items in their fridge or freezer. The application will support both manual and AI-assisted item entry, notification scheduling for expiring items, and optional barcode scanning for food recognition. This README outlines the architectural principles, technologies used, and MVP goals for backend development.
+**FridgePalBE** is the backend API for **FridgePal** — a web application that helps users track food items in their fridge or freezer. Users can add items manually or via AI-powered image recognition, receive notifications before items expire, and optionally scan expiration dates using OCR.
+
+This README outlines the architecture, tech stack, project structure, and MVP development goals.
 
 ---
 
 ## 🏗️ Technologies & Architecture
 
-FridgePalBE follows **Clean Architecture** and uses:
+FridgePalBE is built using **Clean Architecture** and applies modern .NET best practices:
 
-- **.NET 8** – Web API
+- **.NET 8** – ASP.NET Core Web API
 - **CQRS** with [MediatR](https://github.com/jbogard/MediatR)
-- **Entity Framework Core**
-- **FluentValidation** (via MediatR Pipeline Behaviors)
-- **AutoMapper** – DTO to Entity mapping
-- **OperationResult** – Consistent API response wrapping
-- **Modular structure** – With clear separation of:
-  - `API` (Controllers, DI)
-  - `Application` (CQRS logic, DTOs, interfaces)
-  - `Infrastructure` (EF Core, persistence, services)
-  - `Domain` (Entities, business rules)
+- **Entity Framework Core** – Data persistence
+- **FluentValidation** – Request validation via MediatR pipeline behaviors
+- **OperationResult** – Unified response wrapper for success/failure states
+- **Cloudinary API** – For storing images and returning secure URLs
+- **OpenAI GPT-4o Vision** – For analyzing uploaded images
+- **Modular project structure** – with strict separation of concerns:
+  - `API` – Controllers, dependency injection setup
+  - `Application` – CQRS logic, DTOs, validators, interfaces
+  - `Domain` – Business entities and core rules
+  - `Infrastructure` – EF Core, repositories, external services
 
 ---
 
@@ -27,33 +30,45 @@ FridgePalBE follows **Clean Architecture** and uses:
 ```
 FridgePalBE/
 │
-├── FridgePalBE.API/            → Web API entry point
-│   ├── Controllers/
-│   └── Program.cs, DI setup
+├── FridgePalBE.API/              → Web API entry point
+│   ├── Controllers/              → MediatR endpoints
+│   └── Program.cs                → DI, CORS, Swagger, middleware
 │
-├── FridgePalBE.Application/    → CQRS, Validators, DTOs, Interfaces
-│   ├── Items/
-│   └── Common/
+├── FridgePalBE.Application/      → CQRS, DTOs, Validators, Interfaces
+│   ├── Items/                    → Commands, Queries, Handlers
+│   ├── ImageAnalysis/            → GPT-4 Vision integration
+│   └── Common/                   → Shared models & contracts
 │
-├── FridgePalBE.Domain/         → Core business entities & logic
+├── FridgePalBE.Domain/           → Entities, Enums, ValueObjects
 │   └── Entities/
 │
-├── FridgePalBE.Infrastructure/ → Data persistence, services
-│   └── Repositories, EF Core DbContext
+├── FridgePalBE.Infrastructure/   → EF Core, Cloudinary, GPT API integration
+│   └── DbContext, Services, Repositories
 │
-└── FridgePalBE.sln             → Solution file
+└── FridgePalBE.sln               → Solution file
 ```
 
 ---
 
-## 🚧 Development Focus
+## ✅ Current Features (MVP Scope)
 
-For the MVP, the backend team is focusing on:
+- ✅ **Manual item entry** – Add fridge/freezer items via DTOs
+- ✅ **Update & delete items** – With support for `PATCH` partial updates
+- ✅ **Get all items** – Retrieve all items or by filter
+- ✅ **Image analysis with GPT-4 Vision** – Extract item name, category, and estimated shelf life
+- ✅ **Cloudinary integration** – Upload and serve fridge images securely
+- ⏳ **OCR expiration date extraction** – Placeholder for text-based expiry scanning
+- ⏳ **Notification scheduling logic** – Planned for later
+- ⏳ **Barcode scanning** – Placeholder feature
 
-- CRUD operations for fridge items
-- Integration points for image & barcode scanning (placeholder for now)
-- Notification preference and logic structure (to be implemented)
-- Building out a flexible, testable, and maintainable backend
+---
+
+## 📌 Notes
+
+- Categories are fixed and shared with the frontend for consistent mapping
+- Shelf life is inferred via GPT and used to calculate expiration dates
+- Error handling and validation follow a centralized pipeline approach
+- Database uses EF Core with a `DbContext` per bounded context
 
 ---
 
