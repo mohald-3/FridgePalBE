@@ -1,0 +1,62 @@
+name: Notify Discord (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: "Title shown in Discord"
+        required: true
+        default: "Manual notification"
+      message:
+        description: "Main message/description"
+        required: true
+        default: "Triggered by workflow_dispatch"
+      status:
+        description: "Visual status"
+        required: true
+        type: choice
+        options: [success, failure, info]
+        default: success
+      environment:
+        description: "Where is this relevant?"
+        required: true
+        type: choice
+        options: [dev, staging, prod]
+        default: dev
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    env:
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORDWEBHOOK }}
+      TITLE: ${{ inputs.title }}
+      MESSAGE: ${{ inputs.message }}
+      STATUS: ${{ inputs.status }}
+      ENVIRONMENT: ${{ inputs.environment }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      ACTOR: ${{ github.actor }}
+      REF: ${{ github.ref }}
+    steps:
+      - name: Compute color & status icon
+        run: |
+          if [ "$STATUS" = "success" ]; then COLOR=5763719; ICON="✅";
+          elif [ "$STATUS" = "failure" ]; then COLOR=15548997; ICON="❌";
+          else COLOR=9807270; ICON="ℹ️"; fi
+          echo "COLOR=$COLOR" >> $GITHUB_ENV
+          echo "ICON=$ICON" >> $GITHUB_ENV
+
+      - name: Post to Discord
+        run: |
+          NOW=$(date -u +"%Y-%m-%d %H:%M:%SZ")
+          PAYLOAD=$(jq -n \
+            --arg t "$ICON $TITLE" \
+            --arg d "**Environment:** \`$ENVIRONMENT\`\n**Actor:** \`$ACTOR\`\n**Ref:** \`$REF\`\n$message\n\n[View run]($RUN_URL)" \
+            --arg ts "$NOW" \
+            --argjson c "$COLOR" \
+            '{embeds: [{title:$t, description:$d, color:$c, timestamp:$ts}] }')
+          curl -sS -X POST "$DISCORDWEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD"
